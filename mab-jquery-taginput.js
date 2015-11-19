@@ -151,15 +151,13 @@
                     var tagIndex = $.inArray(newTag, tagData.val().split(separator));
                     // Don't allow the addition of duplicate tags unless explicitly specified
                     if(allowDuplicates || (tagIndex === -1)) {
-                        //preserve current data for callback
-                        var tagDataCurrent = tagData.val();
                         // Insert a new tag span before the hidden input
                         tagData.before('<span class="label label-primary" data-tag="' + newTag + '">' + newTag + ' <span class="glyphicon glyphicon-remove"></span></span>');
                         _addTagToDataField(tagData, separator, newTag);
                         // Reset the tag input
                         _resetTagInput(input, usingTypeahead);
                         input.attr('placeholder', '');
-                        that.options.callback.call(tagDataCurrent,tagData.val(),newTag,null);
+                        that.options.callback.call(newTag,tagData.val());
                     } else {
                         // Highlight the duplicate tag
                         var existing = tagInputContainer.find('span.label[data-tag="' + newTag + '"]');
@@ -172,8 +170,6 @@
                 // If backspace is hit and there's nothing in the input (if the input *isn't* empty, 
                 // we don't want to prevent the default action, which is deleting a character)
                 if(e.keyCode == KEYCODES.BACKSPACE && $.trim(input.val()) === '') {
-                    //preserve current data for callback
-                    var tagDataCurrent = tagData.val();
                     // Remove the last tag span before the hidden data input
                     var tagRemoved = tagData.prev('span.label').text();
                     tagData.prev('span.label').remove();
@@ -183,7 +179,7 @@
                     _resetTagInput(input, usingTypeahead);
                     if(tagData.val() === '')
                         input.attr('placeholder', originalPlaceHolder);
-                    that.options.callback.call(tagDataCurrent,tagData.val(),null,tagRemoved);
+                    that.options.callback.call(tagRemoved,tagData.val());
                 }
             });
 
@@ -215,14 +211,12 @@
                 // Don't bubble the click event up to the input container
                 // This would cause the text input to be shown by the container's click event
                 e.stopPropagation();
-                //preserve current data for callback
-                var tagDataCurrent = tagData.val();
                 // Get the text of the tag to be removed (parent of this is the label span)
                 var tag = $(this).parent();
                 var tagText = $.trim(tag.text());
                 _removeTagFromDataField(tagData, separator, tagText);
                 tag.remove();
-                that.options.callback.call(tagDataCurrent,tagData.val(),null,tagText);
+                that.options.callback.call(tagText,tagData.val());
             });
 
             // If the control already has some tags in it
